@@ -1,0 +1,25 @@
+CREATE PROCEDURE GetTop3SalariesPerDepartmentPostgreSQL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    WITH RankedSalaries AS (
+        SELECT 
+            EmployeeID, 
+            Name, 
+            Department, 
+            Salary,
+            ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) AS rank
+        FROM Employees
+    )
+    SELECT 
+        EmployeeID, 
+        Name, 
+        Department, 
+        Salary
+    FROM RankedSalaries
+    WHERE rank <= 3;
+END;
+
+
+EXEC GetTop3SalariesPerDepartmentPostgreSQL;
